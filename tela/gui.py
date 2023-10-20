@@ -1,15 +1,13 @@
+import tkinter
 from pathlib import Path
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import openpyxl
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
-import time
-
-# import tk
+from PIL import Image, ImageTk
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\54793421857\Desktop\Tela\Tela_Projeto_TKinter-main\tela\Imagem")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\54793421857\Desktop\Tela\Tela_Projeto_TKinter\tela\Imagem")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -32,9 +30,6 @@ image_8 = canvas.create_image(
     481.0,
     image=image_image_8
 )
-
-ImagemBotaoVoltarA = PhotoImage(
-    file=relative_to_assets("VoltarAzul.png"))
 
 ImagemTitulo = PhotoImage(
     file=relative_to_assets("Titulo.png"))
@@ -65,38 +60,6 @@ ImagemBGCT2 = PhotoImage(
 
 ImagemCaixaTexto2 = PhotoImage(
     file=relative_to_assets("CaixaTexto.png"))
-
-# Botoes
-
-BotaoVoltarAzul = Button(
-    image=ImagemBotaoVoltarA,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("voltar clicked"),
-    relief="flat"
-)
-
-BotaoVoltarAzul.place(
-    x=126.0,
-    y=550.0,
-    width=173.0,
-    height=58.0
-)
-
-BotaoFinalizar = Button(
-    image=ImagemBotaoFinalizar,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("Finalizar clicked"),
-    relief="flat"
-)
-
-BotaoFinalizar.place(
-    x=627.0,
-    y=551.0,
-    width=172.0,
-    height=56.0
-)
 
 # texto
 
@@ -162,6 +125,7 @@ CaixaTexto1.place(
     height=52.0
 )
 
+
 CaixaTexto2 = canvas.create_image(
     713.0,
     363.0,
@@ -181,7 +145,25 @@ CaixaTexto2.place(
     height=52.0
 )
 
-# Drop Drow
+CaixaTexto2.configure(font=("Arial", 14))
+CaixaTexto1.configure(font=("Arial", 14))
+
+def ValoresCaixa():
+    valor_caixa1 = CaixaTexto1.get("1.0", "end-1c")
+    valor_caixa2 = CaixaTexto2.get("1.0", "end-1c")
+
+    try:
+        valor_int_caixa1 = int(valor_caixa1)
+        valor_int_caixa2 = int(valor_caixa2)
+
+        print(f"Valor da Caixa 1 (int): {valor_int_caixa1}")
+        print(f"Valor da Caixa 2 (int): {valor_int_caixa2}")
+    except ValueError:
+        tkinter.messagebox.showerror(title="Erro de valor",
+                                     message="Erro ao processar quantidade de dias úteis. Digite uma valor valido")
+
+    # Drop Drow
+
 
 planilhas = {}
 
@@ -194,12 +176,11 @@ def abrir_arquivo_excel(opcao):
             # Abra e leia a planilha
             workbook = openpyxl.load_workbook(file_path)
             planilhas[opcao].append(workbook)
-            # Feche a planilha (se necessário)
             workbook.close()
 
 
 opcoes = ["Reclassificação ", "Doc. Pessoais", "Nome da mãe", "Relatorio Hora Extra", "Relatorio de férias",
-          "Deligamento de benefício", "Planinha de exceções"]
+          "Deligamento de benefício", "Planilha de exceções"]
 
 var_opcao = tk.StringVar(window)
 var_opcao.set(opcoes[0])
@@ -213,16 +194,35 @@ def opcao_selecionada(*args):
     messagebox.showinfo('Sucesso', f'Sucesso em adicionar planilha: {opcao}')
 
 
-
 image_image_8 = PhotoImage(
     file=relative_to_assets("image_8.png"))
 
 
+
+caret_up = ImageTk.PhotoImage(Image.open('./imagem/cima.png'))
+caret_down = ImageTk.PhotoImage(Image.open('./imagem/baixo.png'))
+
 menu_suspenso = tk.OptionMenu(window, var_opcao, *opcoes, command=opcao_selecionada)
+menu_suspenso.configure(pady=20, padx=20, border=0, highlightthickness=1, font=('Arial', 16), indicatoron=0, image=caret_down, compound=tk.RIGHT, background="#E3E3E3", activebackground="#E3E3E3")
 menu_suspenso.pack()
-menu_suspenso.configure(anchor="n")
 canvas.create_window(713.0, 481.0, window=menu_suspenso)
 
+# Botoes
+
+BotaoFinalizar = Button(
+    image=ImagemBotaoFinalizar,
+    borderwidth=0,
+    highlightthickness=0,
+    command=ValoresCaixa,
+    relief="flat"
+)
+
+BotaoFinalizar.place(
+    x=627.0,
+    y=551.0,
+    width=172.0,
+    height=56.0
+)
 
 window.resizable(False, False)
 window.mainloop()
